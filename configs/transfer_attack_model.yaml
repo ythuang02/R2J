@@ -1,0 +1,46 @@
+model:
+  attacker:
+    model: llama-3-8b
+    model_path: model/Meta-Llama-3-8B
+    lora_path: saves/AdvBench_gpt-3.5-turbo-0125/step_20
+    temperature: 1.0
+    top_p: 1.0
+    cutoff_len: 1024
+    dtype: float16
+  target:
+    model: llama-2-7b-chat
+    model_path: model/Llama-2-7b-chat-hf
+    temperature: 0.7
+    top_p: 1.0
+    cutoff_len: 1024
+    dtype: float16
+  evaluator:
+    model: gpt-3.5-turbo-0125
+    temperature: 0
+    top_p: 1.0
+    cutoff_len: 1024
+    api:
+      base_url: https://api.openai.com/v1/chat/completions
+      key: sk-
+      max_retry: 10
+      interval: 1
+experiment:
+  num_workers: 100
+  dataset: AdvBench
+  resume: False
+  start_from: 0
+  max_step: 30
+  evaluator:
+    max_retry: 5
+    threshold_similar: 3
+  finetune:
+    finetune: False
+  attacker:
+    gpu: "0,1,2,3"
+    per_device_workers: 1
+    num_samples: 1
+    num_adds: 1
+  target:
+    gpu: "0,1,2,3"
+    per_device_workers: 1
+    per_device_batch_size: 1

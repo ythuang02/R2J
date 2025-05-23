@@ -1,0 +1,33 @@
+#!/bin/bash
+
+deepspeed --include localhost:${1} --master_port ${2} factory/src/train.py \
+    --deepspeed ${3} \
+    --stage sft \
+    --do_train \
+    --model_name_or_path ${4} \
+    --dataset ${5} \
+    --dataset_dir ${6} \
+    --template default \
+    --finetuning_type lora \
+    --lora_target ${7} \
+    --output_dir ${8} \
+    --overwrite_cache \
+    --overwrite_output_dir \
+    --cutoff_len ${9} \
+    --preprocessing_num_workers ${10} \
+    --per_device_train_batch_size ${11} \
+    --per_device_eval_batch_size 1 \
+    --gradient_accumulation_steps ${12} \
+    --lr_scheduler_type cosine \
+    --logging_steps ${13} \
+    --warmup_steps ${14} \
+    --save_steps 100000000 \
+    --eval_steps ${15} \
+    --evaluation_strategy steps \
+    --learning_rate ${16} \
+    --num_train_epochs ${17} \
+    --max_samples 100000000 \
+    --val_size 0.05 \
+    --ddp_timeout 180000000 \
+    --plot_loss \
+    --${18} 2>&1 | tee -a ${8}/finetune.log

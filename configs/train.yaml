@@ -1,0 +1,63 @@
+model:
+  attacker:
+    model: llama-3-8b
+    model_path: model/Meta-Llama-3-8B
+    temperature: 1.0
+    top_p: 1.0
+    cutoff_len: 1024
+    dtype: float16
+  target:
+    model: gpt-3.5-turbo-0125
+    temperature: 0.7
+    top_p: 1.0
+    cutoff_len: 1024
+    api:
+      base_url: https://api.openai.com/v1/chat/completions
+      key: sk-
+      max_retry: 10
+      interval: 1
+  evaluator:
+    model: gpt-3.5-turbo-0125
+    temperature: 0
+    top_p: 1.0
+    cutoff_len: 1024
+    api:
+      base_url: https://api.openai.com/v1/chat/completions
+      key: sk-
+      max_retry: 10
+      interval: 1
+experiment:
+  num_workers: 100
+  dataset: AdvBench
+  resume: False
+  start_from: 1
+  max_step: 20
+  evaluator:
+    max_retry: 5
+    threshold_similar: 3
+  finetune:
+    finetune: True
+    gpu: "0,1,2,3"
+    num_samples: 5
+    master_port: 30500
+    deepspeed: finetune/ds_z3_config.json
+    lora_target: gate_proj,down_proj,up_proj,q_proj,k_proj,v_proj,o_proj
+    cutoff_len: 1024
+    per_device_train_batch_size: 8
+    gradient_accumulation_steps: 1
+    logging_steps: 5
+    warmup_steps: 10
+    eval_steps: 100
+    learning_rate: 1e-4
+    num_train_epochs: 3
+    fp16: False
+    bf16: True
+  attacker:
+    gpu: "0,1,2,3"
+    per_device_workers: 1
+    num_samples: 3
+    num_adds: 3
+  target:
+    gpu: "0,1,2,3"
+    per_device_workers: 1
+    per_device_batch_size: 1
